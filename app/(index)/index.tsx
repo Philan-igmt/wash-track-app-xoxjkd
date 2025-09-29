@@ -1,87 +1,46 @@
+
 import React from "react";
 import { Stack, router } from "expo-router";
-import { FlatList, Pressable, StyleSheet, View, Text } from "react-native";
-// Components
+import { ScrollView, StyleSheet, View, Text, Pressable } from "react-native";
 import { IconCircle } from "@/components/IconCircle";
 import { IconSymbol } from "@/components/IconSymbol";
-import { BodyScrollView } from "@/components/BodyScrollView";
 import { Button } from "@/components/button";
-// Constants & Hooks
-import { backgroundColors } from "@/constants/Colors";
-
-const ICON_COLOR = "#007AFF";
+import { colors, commonStyles } from "@/styles/commonStyles";
 
 export default function HomeScreen() {
-
-  const modalDemos = [
+  const services = [
     {
-      title: "Standard Modal",
-      description: "Full screen modal presentation",
-      route: "/modal",
+      id: 1,
+      title: "Request Car Wash",
+      description: "Book a professional car wash service",
+      icon: "🚗",
+      route: "/request-car-wash",
       color: "#007AFF",
     },
     {
-      title: "Form Sheet",
-      description: "Bottom sheet with detents and grabber",
-      route: "/formsheet",
+      id: 2,
+      title: "Track Driver",
+      description: "See your driver's real-time location",
+      icon: "📍",
+      route: "/track-driver",
       color: "#34C759",
     },
     {
-      title: "Transparent Modal",
-      description: "Overlay without obscuring background",
-      route: "/transparent-modal",
+      id: 3,
+      title: "Order History",
+      description: "View your past car wash orders",
+      icon: "📋",
+      route: "/order-history",
       color: "#FF9500",
     }
   ];
 
-  const renderModalDemo = ({ item }: { item: typeof modalDemos[0] }) => (
-    <View style={styles.demoCard}>
-      <View style={[styles.demoIcon, { backgroundColor: item.color }]}>
-        <IconSymbol name="square.grid.3x3" color="white" size={24} />
-      </View>
-      <View style={styles.demoContent}>
-        <Text style={styles.demoTitle}>{item.title}</Text>
-        <Text style={styles.demoDescription}>{item.description}</Text>
-      </View>
-      <Button
-        variant="outline"
-        size="sm"
-        onPress={() => router.push(item.route as any)}
-      >
-        Try It
-      </Button>
-    </View>
-  );
-
-  const renderEmptyList = () => (
-    <BodyScrollView contentContainerStyle={styles.emptyStateContainer}>
-      <IconCircle
-        emoji=""
-        backgroundColor={
-          backgroundColors[Math.floor(Math.random() * backgroundColors.length)]
-        }
-      />
-    </BodyScrollView>
-  );
-
   const renderHeaderRight = () => (
     <Pressable
-      onPress={() => {console.log("plus")}}
+      onPress={() => console.log("Settings pressed")}
       style={styles.headerButtonContainer}
     >
-      <IconSymbol name="plus" color={ICON_COLOR} />
-    </Pressable>
-  );
-
-  const renderHeaderLeft = () => (
-    <Pressable
-      onPress={() => {console.log("gear")}}
-      style={styles.headerButtonContainer}
-    >
-      <IconSymbol
-        name="gear"
-        color={ICON_COLOR}
-      />
+      <IconSymbol name="gear" color="#007AFF" />
     </Pressable>
   );
 
@@ -89,21 +48,71 @@ export default function HomeScreen() {
     <>
       <Stack.Screen
         options={{
-          title: "Building the app...",
+          title: "CarWash Pro",
           headerRight: renderHeaderRight,
-          headerLeft: renderHeaderLeft,
+          headerStyle: {
+            backgroundColor: '#ffffff',
+          },
+          headerTitleStyle: {
+            color: '#333333',
+            fontWeight: '600',
+          },
         }}
       />
-      <View style={styles.container}>
-        <FlatList
-          data={modalDemos}
-          renderItem={renderModalDemo}
-          keyExtractor={(item) => item.route}
-          contentContainerStyle={styles.listContainer}
-          contentInsetAdjustmentBehavior="automatic"
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <View style={styles.heroSection}>
+          <IconCircle
+            emoji="🚗"
+            backgroundColor="#007AFF"
+            size={80}
+            style={styles.heroIcon}
+          />
+          <Text style={styles.heroTitle}>Professional Car Wash</Text>
+          <Text style={styles.heroSubtitle}>
+            Book premium car wash services and track your driver in real-time
+          </Text>
+        </View>
+
+        <View style={styles.servicesSection}>
+          {services.map((service) => (
+            <Pressable
+              key={service.id}
+              style={[styles.serviceCard, { borderLeftColor: service.color }]}
+              onPress={() => {
+                console.log(`Navigating to ${service.route}`);
+                router.push(service.route as any);
+              }}
+            >
+              <View style={styles.serviceIconContainer}>
+                <IconCircle
+                  emoji={service.icon}
+                  backgroundColor={service.color}
+                  size={50}
+                />
+              </View>
+              <View style={styles.serviceContent}>
+                <Text style={styles.serviceTitle}>{service.title}</Text>
+                <Text style={styles.serviceDescription}>{service.description}</Text>
+              </View>
+              <IconSymbol name="chevron.right" color="#999" size={20} />
+            </Pressable>
+          ))}
+        </View>
+
+        <View style={styles.quickStatsSection}>
+          <Text style={styles.sectionTitle}>Quick Stats</Text>
+          <View style={styles.statsContainer}>
+            <View style={styles.statCard}>
+              <Text style={styles.statNumber}>0</Text>
+              <Text style={styles.statLabel}>Total Washes</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statNumber}>$0</Text>
+              <Text style={styles.statLabel}>Total Saved</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
     </>
   );
 }
@@ -111,71 +120,107 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8f9fa',
   },
-  headerSection: {
-    padding: 20,
-    paddingBottom: 16,
+  contentContainer: {
+    paddingBottom: 30,
+  },
+  headerButtonContainer: {
+    padding: 8,
+  },
+  heroSection: {
     backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  heroIcon: {
+    marginBottom: 20,
+  },
+  heroTitle: {
+    fontSize: 28,
+    fontWeight: '700',
     color: '#333',
-    marginBottom: 8,
+    marginBottom: 10,
+    textAlign: 'center',
   },
-  headerSubtitle: {
+  heroSubtitle: {
     fontSize: 16,
     color: '#666',
+    textAlign: 'center',
     lineHeight: 22,
+    maxWidth: 280,
   },
-  listContainer: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+  servicesSection: {
+    paddingHorizontal: 20,
+    marginBottom: 30,
   },
-  demoCard: {
+  serviceCard: {
     backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
+    borderLeftWidth: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  demoIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+  serviceIconContainer: {
     marginRight: 16,
   },
-  demoContent: {
+  serviceContent: {
     flex: 1,
   },
-  demoTitle: {
+  serviceTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
     marginBottom: 4,
   },
-  demoDescription: {
+  serviceDescription: {
     fontSize: 14,
     color: '#666',
     lineHeight: 18,
   },
-  emptyStateContainer: {
-    alignItems: "center",
-    gap: 8,
-    paddingTop: 100,
+  quickStatsSection: {
+    paddingHorizontal: 20,
   },
-  headerButtonContainer: {
-    padding: 6, // Just enough padding around the 24px icon
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 16,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#007AFF',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
